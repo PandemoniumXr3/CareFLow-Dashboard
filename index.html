@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>CareFlow Dashboard – Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="app-body">
+  <!-- SECTION: Global App Shell -->
+  <div class="app-shell">
+    <!-- Decorative background shapes -->
+    <div class="bg-shape bg-shape-left"></div>
+    <div class="bg-shape bg-shape-right"></div>
+
+    <!-- SECTION: Sidebar / Primary Navigation -->
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="sidebar__brand">
+        <div class="brand-mark">CF</div>
+        <div class="brand-text">
+          <span class="brand-text__title">CareFlow</span>
+          <span class="brand-text__subtitle">Demo cockpit</span>
+        </div>
+      </div>
+
+      <div class="sidebar__mode-toggle" aria-label="Mode switch">
+        <button class="chip chip--active" data-mode="work" id="modeWorkBtn">Werkmodus</button>
+        <button class="chip" data-mode="home" id="modeHomeBtn">Avondmodus</button>
+      </div>
+
+      <nav class="sidebar__nav">
+        <p class="sidebar__section-label">Work</p>
+        <button class="nav-link nav-link--active" data-section="dashboard">
+          <span class="nav-link__icon">🏠</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-section="report">
+          <span class="nav-link__icon">📝</span>
+          <span>Nieuw verslag</span>
+        </button>
+        <button class="nav-link" data-section="medication">
+          <span class="nav-link__icon">💊</span>
+          <span>Medicatiebord</span>
+        </button>
+        <button class="nav-link" data-section="followups">
+          <span class="nav-link__icon">📞</span>
+          <span>Follow-ups</span>
+        </button>
+        <button class="nav-link" data-section="sentences">
+          <span class="nav-link__icon">💬</span>
+          <span>Snelle zinnen</span>
+        </button>
+        <button class="nav-link" data-section="today">
+          <span class="nav-link__icon">📅</span>
+          <span>Vandaag</span>
+        </button>
+
+        <p class="sidebar__section-label">Home</p>
+        <button class="nav-link" data-section="meals">
+          <span class="nav-link__icon">🍽️</span>
+          <span>Wat eten we?</span>
+        </button>
+        <button class="nav-link" data-section="groceries">
+          <span class="nav-link__icon">🛒</span>
+          <span>Boodschappen</span>
+        </button>
+        <button class="nav-link" data-section="evening">
+          <span class="nav-link__icon">🛋️</span>
+          <span>Avondflow</span>
+        </button>
+
+        <p class="sidebar__section-label">Shortcuts</p>
+        <a class="nav-link" href="https://www.notion.so" target="_blank" rel="noreferrer">
+          <span class="nav-link__icon">📓</span>
+          <span>Notion</span>
+        </a>
+        <a class="nav-link" href="mailto:example@example.com">
+          <span class="nav-link__icon">✉️</span>
+          <span>Mail</span>
+        </a>
+        <a class="nav-link" href="https://wa.me/" target="_blank" rel="noreferrer">
+          <span class="nav-link__icon">💬</span>
+          <span>WhatsApp</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <p class="demo-label">
+          Demo / lokale workflow-assistent<br />
+          Geen echt medisch systeem. Geen externe data-opslag.
+        </p>
+      </div>
+    </aside>
+
+    <!-- SECTION: Main Content -->
+    <main class="main">
+      <!-- SECTION: Top bar / Quick actions -->
+      <header class="topbar">
+        <div class="topbar__left">
+          <div class="welcome-block">
+            <p class="welcome-block__eyebrow">Persoonlijke cockpit</p>
+            <h1 class="welcome-block__title">Welkom mama</h1>
+            <p class="welcome-block__subtitle">Rustige cockpit voor je werkdag en je avond thuis.</p>
+          </div>
+        </div>
+        <div class="topbar__right" aria-label="Quick actions">
+          <button class="btn btn--ghost" data-section="report">➕ Nieuw verslag</button>
+          <button class="btn btn--ghost" data-section="medication">💊 Medicatie</button>
+          <button class="btn btn--ghost" id="quickCopyLastBtn">📋 Kopieer laatste</button>
+          <button class="btn btn--ghost" data-section="favorites">⭐ Favorieten</button>
+          <button class="btn btn--mode" id="modeToggleBtn">Naar avondmodus</button>
+        </div>
+      </header>
+
+      <!-- SECTION: Dashboard Home -->
+      <section class="view view--active" id="view-dashboard" aria-label="Dashboard overview">
+        <div class="layout-grid">
+          <!-- Primary column -->
+          <div class="layout-grid__main">
+            <div class="card-grid">
+              <button class="card card--nav" data-section="report">
+                <div class="card__icon">📝</div>
+                <div class="card__content">
+                  <h2 class="card__title">Nieuw verslag</h2>
+                  <p class="card__body">Met 1 klik een gestructureerd consultverslag.</p>
+                </div>
+              </button>
+              <button class="card card--nav" data-section="medication">
+                <div class="card__icon">💊</div>
+                <div class="card__content">
+                  <h2 class="card__title">Medicatiebord</h2>
+                  <p class="card__body">Overzicht van voorschrijven, herhalen en klaar.</p>
+                </div>
+                <div class="card__badge" id="repeatBadge">0 herhaalacties</div>
+              </button>
+              <button class="card card--nav" data-section="followups">
+                <div class="card__icon">📞</div>
+                <div class="card__content">
+                  <h2 class="card__title">Follow-ups</h2>
+                  <p class="card__body">Terugbellen, checken, wachten en afgerond in één lijst.</p>
+                </div>
+              </button>
+              <button class="card card--nav" data-section="sentences">
+                <div class="card__icon">💬</div>
+                <div class="card__content">
+                  <h2 class="card__title">Snelle zinnen</h2>
+                  <p class="card__body">Je standaardzinnen zonder nadenken invoegen.</p>
+                </div>
+              </button>
+              <button class="card card--nav" data-section="today">
+                <div class="card__icon">📅</div>
+                <div class="card__content">
+                  <h2 class="card__title">Vandaag</h2>
+                  <p class="card__body">Open en afgeronde acties voor deze dienst.</p>
+                </div>
+              </button>
+              <button class="card card--nav" data-section="meals">
+                <div class="card__icon">🍽️</div>
+                <div class="card__content">
+                  <h2 class="card__title">Wat eten we?</h2>
+                  <p class="card__body">Snelle maaltijdideeën passend bij je energie.</p>
+                </div>
+              </button>
+              <button class="card card--nav" data-section="groceries">
+                <div class="card__icon">🛒</div>
+                <div class="card__content">
+                  <h2 class="card__title">Boodschappen</h2>
+                  <p class="card__body">Slimme lijstjes op basis van maaltijden en koelkast.</p>
+                </div>
+              </button>
+              <a class="card card--nav" href="https://www.notion.so" target="_blank" rel="noreferrer">
+                <div class="card__icon">📓</div>
+                <div class="card__content">
+                  <h2 class="card__title">Notion</h2>
+                  <p class="card__body">Jump to your personal workspace.</p>
+                </div>
+              </a>
+              <div class="card card--status" id="medicationStatusCard">
+                <div class="card__header-row">
+                  <h2 class="card__title">Medicatiestatus</h2>
+                  <span class="pill pill--soft">Live overzicht</span>
+                </div>
+                <dl class="status-list">
+                  <div class="status-list__item">
+                    <dt>Nog voorschrijven</dt>
+                    <dd id="statusToPrescribe">0</dd>
+                  </div>
+                  <div class="status-list__item">
+                    <dt>Herhalen</dt>
+                    <dd id="statusRepeat">0</dd>
+                  </div>
+                  <div class="status-list__item">
+                    <dt>Klaar</dt>
+                    <dd id="statusDone">0</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary column -->
+          <div class="layout-grid__side">
+            <!-- Today mini summary -->
+            <section class="card" aria-labelledby="todaySummaryTitle">
+              <div class="card__header-row">
+                <h2 id="todaySummaryTitle" class="card__title">Vandaag</h2>
+              </div>
+              <p class="card__body">In één oogopslag je open en afgeronde acties.</p>
+              <div class="today-summary">
+                <div class="today-summary__item">
+                  <span class="today-summary__label">Open</span>
+                  <span class="today-summary__value" id="todayOpenCount">0</span>
+                </div>
+                <div class="today-summary__item">
+                  <span class="today-summary__label">Afgerond</span>
+                  <span class="today-summary__value" id="todayDoneCount">0</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Favorites preview -->
+            <section class="card" aria-labelledby="favoritesPreviewTitle">
+              <div class="card__header-row">
+                <h2 id="favoritesPreviewTitle" class="card__title">Favorieten</h2>
+              </div>
+              <p class="card__body">Meest gebruikte snippets direct bovenaan.</p>
+              <ul class="favorites-preview" id="favoritesPreviewList">
+                <!-- Populated by JS -->
+              </ul>
+              <button class="btn btn--text" data-section="favorites">Open favorieten</button>
+            </section>
+
+            <!-- Notion placeholder / embed -->
+            <section class="card" aria-labelledby="notionEmbedTitle">
+              <div class="card__header-row">
+                <h2 id="notionEmbedTitle" class="card__title">Notion-ruimte</h2>
+              </div>
+              <p class="card__body">Placeholder voor een ingesloten Notion-pagina. In deze demo linken we alleen door, er wordt niets opgeslagen.</p>
+              <a class="btn btn--primary btn--full" href="https://www.notion.so" target="_blank" rel="noreferrer">Open Notion</a>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Report Generator -->
+      <section class="view" id="view-report" aria-label="Report generator">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Verslaggenerator</h2>
+            <p class="section-header__subtitle">1‑klik templates, slimme autofill, crisisverslag en kopiegeschiedenis. Alles lokaal, alleen als demo.</p>
+          </div>
+          <div class="chip-row">
+            <button class="chip" data-template="followup">Follow-up consult</button>
+            <button class="chip" data-template="phone">Telefonisch contact</button>
+            <button class="chip" data-template="medication">Medicatie-evaluatie</button>
+            <button class="chip" data-template="crisis">Crisisbeoordeling</button>
+          </div>
+        </div>
+
+        <div class="two-column">
+          <!-- Form column -->
+          <div class="two-column__main">
+            <form class="form" id="reportForm">
+              <!-- SECTION: Form Fields -->
+              <div class="form__row">
+                <label for="consultType" class="form__label">Consulttype</label>
+                <input id="consultType" name="consultType" class="input" placeholder="Bijv. follow-up poli" />
+              </div>
+              <div class="form__row">
+                <label for="complaint" class="form__label">Hoofdklacht</label>
+                <textarea id="complaint" name="complaint" class="input input--textarea" placeholder="Korte beschrijving van de reden van contact..."></textarea>
+              </div>
+              <div class="form__row">
+                <label for="observations" class="form__label">Observaties</label>
+                <textarea id="observations" name="observations" class="input input--textarea" placeholder="Klinische indruk, relevante voorgeschiedenis, onderzoek..."></textarea>
+              </div>
+              <div class="form__row">
+                <label for="policy" class="form__label">Beleid / plan</label>
+                <textarea id="policy" name="policy" class="input input--textarea" placeholder="Afgesproken plan, medicatiewijzigingen, follow-up..."></textarea>
+              </div>
+              <div class="form__row">
+                <label for="notes" class="form__label">Notities</label>
+                <textarea id="notes" name="notes" class="input input--textarea" placeholder="Aanvullende opmerkingen of context...	extarea>
+              </div>
+
+              <div class="form__row form__row--actions">
+                <button type="button" class="btn btn--primary" id="generateReportBtn">Genereer verslag</button>
+                <p class="hint">Smart autofill: try typing keywords like <span class="pill pill--hint">slaap</span> or <span class="pill pill--hint">pijn</span> in the fields.</p>
+              </div>
+            </form>
+          </div>
+
+          <!-- Output column -->
+          <div class="two-column__side">
+            <section class="card" aria-label="Generated report">
+              <div class="card__header-row">
+                <h3 class="card__title">Concept report</h3>
+                <button class="btn btn--ghost" id="copyReportBtn">Copy text</button>
+              </div>
+              <pre class="output" id="reportOutput" aria-live="polite">Your report will appear here.</pre>
+            </section>
+
+            <section class="card" aria-label="Copy history">
+              <div class="card__header-row">
+                <h3 class="card__title">Copy history</h3>
+                <span class="pill pill--soft">Last 5 snippets</span>
+              </div>
+              <ul class="history-list" id="copyHistoryList">
+                <!-- Populated in JS -->
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Medication Board -->
+      <section class="view" id="view-medication" aria-label="Medication board">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Medication board</h2>
+            <p class="section-header__subtitle">Visual overview of prescribing, repeats and completed actions. All items are example data.</p>
+          </div>
+          <form class="inline-form" id="medicationForm">
+            <input class="input input--small" id="medName" placeholder="Medication name" />
+            <input class="input input--small" id="medNote" placeholder="Short note / reason" />
+            <select class="input input--small" id="medAlert">
+              <option value="ok">🟢 ok</option>
+              <option value="later">🟡 check later</option>
+              <option value="urgent">🔴 urgent</option>
+            </select>
+            <label class="checkbox">
+              <input type="checkbox" id="medRepeatNeeded" />
+              <span>Repeat needed</span>
+            </label>
+            <button type="button" class="btn btn--primary" id="addMedicationBtn">Add</button>
+          </form>
+        </div>
+
+        <div class="board" aria-label="Medication kanban board">
+          <div class="board-column" data-column="toPrescribe">
+            <h3 class="board-column__title">To prescribe</h3>
+            <div class="board-column__list" id="col-toPrescribe"></div>
+          </div>
+          <div class="board-column" data-column="prescribed">
+            <h3 class="board-column__title">Prescribed</h3>
+            <div class="board-column__list" id="col-prescribed"></div>
+          </div>
+          <div class="board-column" data-column="repeat">
+            <h3 class="board-column__title">Repeat</h3>
+            <div class="board-column__list" id="col-repeat"></div>
+          </div>
+          <div class="board-column" data-column="done">
+            <h3 class="board-column__title">Done</h3>
+            <div class="board-column__list" id="col-done"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Follow-ups -->
+      <section class="view" id="view-followups" aria-label="Follow-up list">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Follow-ups</h2>
+            <p class="section-header__subtitle">Simple checklist for call backs, checks and waiting items.</p>
+          </div>
+          <form class="inline-form" id="followupForm">
+            <input class="input input--small" id="followupText" placeholder="New follow-up task" />
+            <select class="input input--small" id="followupCategory">
+              <option value="call">Call back</option>
+              <option value="check">Check</option>
+              <option value="waiting">Waiting</option>
+            </select>
+            <button type="button" class="btn btn--primary" id="addFollowupBtn">Add</button>
+          </form>
+        </div>
+        <ul class="task-list" id="followupList"></ul>
+      </section>
+
+      <!-- SECTION: Quick Sentences -->
+      <section class="view" id="view-sentences" aria-label="Quick sentences library">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Quick sentences</h2>
+            <p class="section-header__subtitle">Click a sentence to copy or save it as favorite.</p>
+          </div>
+        </div>
+        <div class="two-column two-column--stack">
+          <div class="two-column__main">
+            <div class="sentence-categories">
+              <div class="sentence-category" data-category="intake">
+                <h3 class="sentence-category__title">Intake</h3>
+                <ul class="sentence-list" id="sentences-intake"></ul>
+              </div>
+              <div class="sentence-category" data-category="followup">
+                <h3 class="sentence-category__title">Follow-up</h3>
+                <ul class="sentence-list" id="sentences-followup"></ul>
+              </div>
+              <div class="sentence-category" data-category="policy">
+                <h3 class="sentence-category__title">Policy</h3>
+                <ul class="sentence-list" id="sentences-policy"></ul>
+              </div>
+              <div class="sentence-category" data-category="medication">
+                <h3 class="sentence-category__title">Medication</h3>
+                <ul class="sentence-list" id="sentences-medication"></ul>
+              </div>
+            </div>
+          </div>
+          <div class="two-column__side" id="view-favorites" aria-label="Favorites">
+            <section class="card">
+              <div class="card__header-row">
+                <h3 class="card__title">Favorites</h3>
+                <button class="btn btn--ghost" id="clearFavoritesBtn">Clear</button>
+              </div>
+              <ul class="favorites-list" id="favoritesList"></ul>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Today Overview full view -->
+      <section class="view" id="view-today" aria-label="Today overview">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Today</h2>
+            <p class="section-header__subtitle">Plan the day in a few focused steps.</p>
+          </div>
+          <form class="inline-form" id="todayTaskForm">
+            <input class="input input--small" id="todayTaskText" placeholder="Add a task for today" />
+            <button type="button" class="btn btn--primary" id="addTodayTaskBtn">Add</button>
+          </form>
+        </div>
+        <div class="two-column two-column--stack">
+          <div class="two-column__main">
+            <h3 class="subheading">Open</h3>
+            <ul class="task-list" id="todayOpenList"></ul>
+          </div>
+          <div class="two-column__side">
+            <h3 class="subheading">Completed</h3>
+            <ul class="task-list task-list--compact" id="todayDoneList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Home Mode – Meals -->
+      <section class="view" id="view-meals" aria-label="Meal suggestions">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">What should I eat?</h2>
+            <p class="section-header__subtitle">Small helper for tired evenings – simple, warm and realistic.</p>
+          </div>
+        </div>
+        <div class="two-column">
+          <div class="two-column__main">
+            <form class="form" id="mealForm">
+              <div class="form__row">
+                <label class="form__label" for="energyLevel">Energy level</label>
+                <select class="input" id="energyLevel">
+                  <option value="tired">I am tired</option>
+                  <option value="normal">I have normal energy</option>
+                </select>
+              </div>
+              <div class="form__row">
+                <label class="form__label" for="whoIsEating">Who is eating?</label>
+                <select class="input" id="whoIsEating">
+                  <option value="alone">Just me</option>
+                  <option value="partner">Me + partner</option>
+                  <option value="family">Family / kids</option>
+                </select>
+              </div>
+              <div class="form__row">
+                <label class="form__label" for="peopleCount">Number of people</label>
+                <input class="input" id="peopleCount" type="number" min="1" value="2" />
+              </div>
+              <div class="form__row">
+                <label class="form__label" for="budgetLevel">Budget</label>
+                <select class="input" id="budgetLevel">
+                  <option value="low">Low / budget</option>
+                  <option value="normal">Normal</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn--primary" id="suggestMealsBtn">Suggest meals</button>
+            </form>
+          </div>
+          <div class="two-column__side">
+            <section class="card" aria-label="Meal suggestions">
+              <div class="card__header-row">
+                <h3 class="card__title">Suggestions</h3>
+              </div>
+              <ul class="meal-list" id="mealSuggestions"></ul>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Groceries & Fridge -->
+      <section class="view" id="view-groceries" aria-label="Groceries and fridge overview">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Groceries & fridge</h2>
+            <p class="section-header__subtitle">See what is in the house and what is missing for your chosen meals.</p>
+          </div>
+        </div>
+        <div class="three-column">
+          <div class="three-column__item">
+            <h3 class="subheading">Grocery list</h3>
+            <form class="inline-form" id="groceryForm">
+              <input class="input input--small" id="groceryText" placeholder="Add grocery item" />
+              <button type="button" class="btn btn--primary" id="addGroceryBtn">Add</button>
+            </form>
+            <ul class="task-list" id="groceryList"></ul>
+          </div>
+          <div class="three-column__item">
+            <h3 class="subheading">What is in the fridge?</h3>
+            <ul class="inventory-list" id="fridgeList">
+              <!-- Example items injected by JS -->
+            </ul>
+          </div>
+          <div class="three-column__item">
+            <h3 class="subheading">Missing ingredients</h3>
+            <p class="hint">Based on selected meals and what is in the fridge.</p>
+            <ul class="task-list" id="missingList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Evening flow -->
+      <section class="view" id="view-evening" aria-label="Evening routine">
+        <div class="section-header">
+          <div>
+            <h2 class="section-header__title">Evening flow</h2>
+            <p class="section-header__subtitle">A tiny ritual to close the day: choose, check, relax.</p>
+          </div>
+        </div>
+        <ol class="evening-flow">
+          <li class="evening-step">
+            <h3 class="evening-step__title">1. Choose a meal</h3>
+            <p class="evening-step__body">Open <button class="link-button" data-section="meals">What should I eat?</button> and pick what feels kind tonight.</p>
+          </li>
+          <li class="evening-step">
+            <h3 class="evening-step__title">2. Check groceries</h3>
+            <p class="evening-step__body">Go to <button class="link-button" data-section="groceries">Groceries & fridge</button> and tick off what you have.</p>
+          </li>
+          <li class="evening-step">
+            <h3 class="evening-step__title">3. Relax</h3>
+            <p class="evening-step__body">Leave the dashboard, make tea, and take 10 quiet minutes just for you.</p>
+          </li>
+        </ol>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
